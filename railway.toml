@@ -3,5 +3,5 @@ builder = "nixpacks"
 buildCommand = "cd frontend && npm install && npm run build && cd ../backend && npm install --build-from-source"
 
 [deploy]
-startCommand = "cd backend && node server.js"
+startCommand = "cd backend && node src/utils/seeder.js && node server.js"
 restartPolicyType = "always"
