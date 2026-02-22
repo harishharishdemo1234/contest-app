@@ -57,8 +57,8 @@ router.post('/login', async (req, res) => {
 
         res.status(201).json({ token, team: { teamID, teamName: teamName.trim(), leaderName: leaderName.trim(), email: sanitizedEmail, submitted: false, disqualified: false } });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Login Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
     }
 });
 

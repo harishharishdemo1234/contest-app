@@ -15,7 +15,17 @@ const adminRoutes = require('./src/routes/admin');
 const codeRoutes = require('./src/routes/code');
 
 const app = express();
+app.set('trust proxy', 1); // Trust Render proxy for req.ip
 const server = http.createServer(app);
+
+// Startup check for essential environment variables
+const requiredEnv = ['JWT_SECRET', 'ADMIN_JWT_SECRET', 'ADMIN_EMAIL', 'ADMIN_PASSWORD'];
+const missingEnv = requiredEnv.filter(k => !process.env[k]);
+if (missingEnv.length > 0) {
+  console.error('\n❌ CRITICAL ERROR: Missing environment variables:', missingEnv.join(', '));
+  console.error('Please set these in your Render/Railway dashboard or .env file.\n');
+  if (process.env.NODE_ENV === 'production') process.exit(1);
+}
 
 const allowedOrigins = process.env.FRONTEND_URL
   ? [process.env.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:3000']
