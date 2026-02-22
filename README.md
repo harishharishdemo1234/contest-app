@@ -20,15 +20,17 @@ A full-stack web application for conducting C programming contests with real-tim
 - **Real-time**: Socket.io
 - **Authentication**: JWT
 
-## Quick Deploy to Render
+## Quick Deploy
 
-Your app is ready to deploy! Follow these steps:
+Your app is ready to deploy! Choose either Render or Railway:
 
-### 1. Make sure your GitHub repo is public
+### Option 1: Deploy to Render (Recommended - Easiest)
+
+#### 1. Make sure your GitHub repo is public
 - Go to https://github.com/harishthiru2807/contest-app
 - Click Settings → Change repository visibility → Make public
 
-### 2. Deploy on Render
+#### 2. Deploy on Render
 
 1. Go to [Render.com](https://render.com) and sign in (or create an account)
 2. Click **"New +"** → **"Web Service"**
@@ -44,9 +46,56 @@ Your app is ready to deploy! Follow these steps:
 7. Wait for the build to complete (5-10 minutes)
 8. Your app will be live at: `https://contest-app.onrender.com`
 
-### 3. Access Your App
+### Option 2: Deploy to Railway
 
-- **Public URL**: Your Render service URL (e.g., `https://contest-app.onrender.com`)
+#### Fix the WorkspaceId Error
+
+The error "You must specify a workspaceId to create a project" happens because Railway needs a workspace first. Here's how to fix it:
+
+**Method 1: Deploy via Railway Dashboard (Easiest)**
+
+1. Go to [Railway.app](https://railway.app) and sign in
+2. If you don't have a workspace yet:
+   - Click on your profile → **"New Workspace"** (or Railway will create one automatically)
+   - Give it a name (e.g., "My Projects")
+3. Click **"New Project"**
+4. Select **"Deploy from GitHub repo"**
+5. Choose your repository: `harishthiru2807/contest-app`
+6. Railway will automatically detect `railway.toml` and configure:
+   - **Build Command**: `cd frontend && npm install && npm run build && cd ../backend && npm install`
+   - **Start Command**: `cd backend && node src/utils/seeder.js && node server.js`
+7. Add Environment Variables (if not auto-detected):
+   - `NODE_ENV` = `production`
+   - `PORT` = `5000`
+   - `JWT_SECRET` = (generate a random string)
+   - `ADMIN_JWT_SECRET` = (generate a random string)
+   - `ADMIN_EMAIL` = `harishcode@admin.com`
+   - `ADMIN_PASSWORD` = `123456789`
+8. Click **"Deploy"** and wait for the build to complete
+9. Your app will be live at: `https://your-app-name.up.railway.app`
+
+**Method 2: Use Railway CLI**
+
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Login to Railway
+railway login
+
+# Initialize project (creates workspace automatically)
+railway init
+
+# Link to existing project (if you created one in dashboard)
+railway link
+
+# Deploy
+railway up
+```
+
+### Access Your App
+
+- **Public URL**: Your deployment service URL
 - **Admin Login**: 
   - Email: `harishcode@admin.com`
   - Password: `123456789`
