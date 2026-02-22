@@ -18,7 +18,10 @@ router.get('/status', async (req, res) => {
     try {
         const s = await getSettings();
         res.json({ isActive: s.isActive, scheduledStart: s.scheduledStart, contestDuration: s.contestDuration, startedAt: s.startedAt, announcements: (s.announcements || []).slice(-5) });
-    } catch (err) { res.status(500).json({ message: 'Server error' }); }
+    } catch (err) {
+        console.error('Contest Route Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
+    }
 });
 
 // GET /api/contest/me
@@ -28,7 +31,10 @@ router.get('/me', authMiddleware, async (req, res) => {
         if (!team) return res.status(404).json({ message: 'Team not found' });
         const { sessionToken, deviceFingerprint, _id, ...safe } = team;
         res.json({ team: safe });
-    } catch (err) { res.status(500).json({ message: 'Server error' }); }
+    } catch (err) {
+        console.error('Contest Route Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
+    }
 });
 
 // GET /api/contest/questions
@@ -43,7 +49,10 @@ router.get('/questions', authMiddleware, async (req, res) => {
             starterCode: q.starterCode || '', testCasesCount: (q.testCases || []).length
         }));
         res.json({ questions: sanitized });
-    } catch (err) { res.status(500).json({ message: 'Server error' }); }
+    } catch (err) {
+        console.error('Contest Route Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
+    }
 });
 
 // GET /api/contest/drafts
@@ -53,7 +62,10 @@ router.get('/drafts', authMiddleware, async (req, res) => {
         const drafts = {};
         subs.forEach(s => { drafts[s.questionID] = { code: s.code, selectedOption: s.selectedOption, output: s.output, marks: s.marks, evaluated: s.evaluated }; });
         res.json({ drafts });
-    } catch (err) { res.status(500).json({ message: 'Server error' }); }
+    } catch (err) {
+        console.error('Contest Route Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
+    }
 });
 
 // POST /api/contest/save-draft

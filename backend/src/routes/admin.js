@@ -22,7 +22,10 @@ router.get('/teams', adminMiddleware, async (req, res) => {
             teams = teams.filter(t => t.teamName?.toLowerCase().includes(s) || t.email?.toLowerCase().includes(s) || t.leaderName?.toLowerCase().includes(s));
         }
         res.json({ teams: teams.map(({ _id, sessionToken, deviceFingerprint, ...t }) => t) });
-    } catch (err) { res.status(500).json({ message: 'Server error' }); }
+    } catch (err) {
+        console.error('Admin Route Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
+    }
 });
 
 // GET /api/admin/leaderboard
@@ -31,7 +34,10 @@ router.get('/leaderboard', adminMiddleware, async (req, res) => {
         const teams = await find('teams', { submitted: true }, { score: -1 });
         const lb = teams.map((t, i) => ({ rank: i + 1, teamName: t.teamName, leaderName: t.leaderName, email: t.email, teamID: t.teamID, score: t.score, disqualified: t.disqualified, endTime: t.endTime }));
         res.json({ leaderboard: lb });
-    } catch (err) { res.status(500).json({ message: 'Server error' }); }
+    } catch (err) {
+        console.error('Admin Route Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
+    }
 });
 
 // GET /api/admin/team/:teamID/submissions
@@ -43,7 +49,10 @@ router.get('/team/:teamID/submissions', adminMiddleware, async (req, res) => {
         const questions = await find('questions', {}, { section: 1, order: 1 });
         const { _id, sessionToken, deviceFingerprint, ...safeTeam } = team;
         res.json({ team: safeTeam, submissions: submissions.map(({ _id, ...s }) => s), questions: questions.map(({ _id, ...q }) => q) });
-    } catch (err) { res.status(500).json({ message: 'Server error' }); }
+    } catch (err) {
+        console.error('Admin Route Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
+    }
 });
 
 // GET /api/admin/export
@@ -62,7 +71,10 @@ router.get('/export', adminMiddleware, async (req, res) => {
         res.setHeader('Content-Disposition', 'attachment; filename="contest_results.xlsx"');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(buf);
-    } catch (err) { res.status(500).json({ message: 'Server error' }); }
+    } catch (err) {
+        console.error('Admin Route Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
+    }
 });
 
 // POST /api/admin/contest/start
@@ -76,7 +88,10 @@ router.post('/contest/start', adminMiddleware, async (req, res) => {
         const io = req.app.get('io');
         io.emit('contest_started', { startedAt: upd.startedAt, duration: upd.contestDuration || settings.contestDuration });
         res.json({ message: 'Contest started' });
-    } catch (err) { res.status(500).json({ message: 'Server error' }); }
+    } catch (err) {
+        console.error('Admin Route Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
+    }
 });
 
 // POST /api/admin/contest/stop
@@ -86,7 +101,10 @@ router.post('/contest/stop', adminMiddleware, async (req, res) => {
         const io = req.app.get('io');
         io.emit('contest_stopped', { stoppedAt: new Date().toISOString() });
         res.json({ message: 'Contest stopped' });
-    } catch (err) { res.status(500).json({ message: 'Server error' }); }
+    } catch (err) {
+        console.error('Admin Route Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
+    }
 });
 
 // POST /api/admin/announce
@@ -101,7 +119,10 @@ router.post('/announce', adminMiddleware, async (req, res) => {
         const io = req.app.get('io');
         io.emit('announcement', ann);
         res.json({ message: 'Announcement sent', announcement: ann });
-    } catch (err) { res.status(500).json({ message: 'Server error' }); }
+    } catch (err) {
+        console.error('Admin Route Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
+    }
 });
 
 // POST /api/admin/disqualify/:teamID
@@ -111,7 +132,10 @@ router.post('/disqualify/:teamID', adminMiddleware, async (req, res) => {
         if (!team) return res.status(404).json({ message: 'Team not found' });
         await update('teams', { teamID: req.params.teamID }, { $set: { disqualified: true, disqualifiedReason: req.body.reason || 'Manual disqualification' } });
         res.json({ message: 'Team disqualified' });
-    } catch (err) { res.status(500).json({ message: 'Server error' }); }
+    } catch (err) {
+        console.error('Admin Route Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
+    }
 });
 
 // GET /api/admin/stats

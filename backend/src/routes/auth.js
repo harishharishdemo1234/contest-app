@@ -20,7 +20,10 @@ router.post('/admin', (req, res) => {
         }
         const token = jwt.sign({ email, isAdmin: true }, process.env.ADMIN_JWT_SECRET, { expiresIn: '8h' });
         res.json({ token, message: 'Admin login successful' });
-    } catch (err) { res.status(500).json({ message: 'Server error' }); }
+    } catch (err) {
+        console.error('Admin Auth Error:', err);
+        res.status(500).json({ message: 'Server error: ' + err.message });
+    }
 });
 
 // POST /api/auth/login
